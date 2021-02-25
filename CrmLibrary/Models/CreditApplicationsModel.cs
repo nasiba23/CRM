@@ -1,6 +1,6 @@
 ﻿namespace CrmLibrary.Models
 {
-    public class CreditApplications
+    public class CreditApplicationsModel
     {
         public int Id { get; set; }
         public int ClientId { get; set; }

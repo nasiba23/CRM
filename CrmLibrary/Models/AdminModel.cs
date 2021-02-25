@@ -2,7 +2,7 @@
 
 namespace CrmLibrary.Models
 {
-    public class Client
+    public class AdminModel
     {
         public int Id { get; set;}
         public string Login { get; set; }

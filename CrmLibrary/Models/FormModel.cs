@@ -1,6 +1,6 @@
 ﻿namespace CrmLibrary.Models
 {
-    public class Form
+    public class FormModel
     {
         public int Id { get; set; }
         public int ClientId { get; set; }

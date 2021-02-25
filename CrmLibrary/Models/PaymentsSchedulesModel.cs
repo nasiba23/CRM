@@ -2,7 +2,7 @@
 
 namespace CrmLibrary.Models
 {
-    public class PaymentsSchedules
+    public class PaymentsSchedulesModel
     {
         public int Id { get; set; }
         public int ApplicationId { get; set; }
