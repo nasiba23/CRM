@@ -17,9 +17,9 @@ namespace CRM
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine($"{new string(' ', 5)}Main menu{new string(' ', 5)}");
             Console.ResetColor();
-            Console.Write("1. Client registration\n" +
-                          "2. Client login\n" +
-                          "3. Admin login\n" +
+            Console.Write("1. Registration and credit processing for clients\n" +
+                          "2. Login for clients\n" +
+                          "3. Login for admins\n" +
                           "4. Exit\n" +
                           "Choice: ");
             return Console.ReadLine();

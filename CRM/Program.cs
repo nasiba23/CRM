@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+using CrmLibrary.Models;
 
 namespace CRM
 {
@@ -20,20 +22,23 @@ namespace CRM
                         Console.WriteLine("Press any key to return main menu");
                         Console.ResetColor();
                         Console.ReadKey();
-                    }break;
+                    }
+                        break;
                     //client login
                     case "2":
                     {
-
+                        
                     }
                         break;
                     //admin login
                     case "3":
                     {
-
-                    }break;
+                        await AdminService.Authorization();
+                    }
+                        break;
                     //exit application
-                    case "4": _isWorking = false; break;
+                    case "4": _isWorking = false;
+                        break;
                 }
             }
         }
