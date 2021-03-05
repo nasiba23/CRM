@@ -27,13 +27,13 @@ namespace CRM
                     //client login
                     case "2":
                     {
-                        
+                        await ClientService.ClientAuthorization();
                     }
                         break;
                     //admin login
                     case "3":
                     {
-                        await AdminService.Authorization();
+                        await AdminService.AdminAuthorization();
                     }
                         break;
                     //exit application

@@ -7,6 +7,8 @@ namespace CRM
 {
     public static class ClientService
     {
+        //for registration and credit processing
+        
         /// <summary>
         /// creates instance of client and inserts it to db by calling a different method
         /// </summary>
@@ -266,6 +268,98 @@ namespace CRM
             {
                 
                 Console.WriteLine($"Credit processing error - {ex.Message}");
+            }
+        }
+        
+        //for client login
+        public static async Task ClientAuthorization()
+        {
+            Console.Clear();
+            string login = Utils.ConsoleWriteWithResult("Login: ");
+            string password = Utils.ConsoleWriteWithResult("Password: ");
+            try
+            {
+                var client = await DatabaseService.ClientAuthorizationCheck(login, password); 
+                if (client.Id > 0 && !string.IsNullOrEmpty(client.Name))
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"{client.Name}, you are successfully logged in");
+                    Console.ResetColor();
+                    await Task.Delay(1500);
+                    await ShowClientMenu(client.Id);
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Incorrect login or password, press any key to return to main menu");
+                    Console.ResetColor();
+                    Console.ReadKey();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Authorization error {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// displays admin menu
+        /// </summary>
+        /// <returns>Task</returns>
+        private static async Task ShowClientMenu(int id)
+        {
+            var isWorking = true;
+            while (isWorking)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"{new string(' ', 5)}Client menu{new string(' ', 5)}");
+                Console.ResetColor();
+                Console.Write("1. Create new credit application\n" +
+                              "2. Log out\n" +
+                              "Choice: ");
+                var choice = Console.ReadLine();
+                switch (choice)
+                {
+                    //create new credit application
+                    case "1":
+                    {
+                        var app = await CreateCreditAppAsync(id);
+                        var client = await DatabaseService.SelectClientFromDb(id);
+                        var form = await DatabaseService.SelectFormFromDb(id);
+                        int score = CalculateClientScore(client, form, app);
+                        if (score > 11)
+                        {
+                            var result = await CreatePaymentsSchedulesModelAsync(score, app);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"Congratulations, your credit application was approved. " +
+                                              $"Below see the payment schedule");
+                            Console.ResetColor();
+                            for (int i = 1; i <= app.Period; i++)
+                            {
+                                Console.WriteLine($"{result.StartDate.Month} - {result.MonthlyPayment}");
+                                result.StartDate = result.StartDate.AddMonths(i);
+                            }
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Unfortunately, your credit application was rejected");
+                            Console.ResetColor();
+                        }
+                    }
+                        break;
+                    //log out
+                    case "2":
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Logging out...");
+                        Console.ResetColor();
+                        await Task.Delay(2000);
+                        isWorking = false;
+                    }
+                        break;
+                }
             }
         }
     }

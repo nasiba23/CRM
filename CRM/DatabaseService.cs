@@ -172,7 +172,14 @@ namespace CRM
         }
 
         //methods for admin login
-        public static async Task<AdminModel> AuthorizationCheck(string login, string password)
+        
+        /// <summary>
+        /// authorizes admin
+        /// </summary>
+        /// <param name="login">admin login</param>
+        /// <param name="password">admin password</param>
+        /// <returns>instance of admin model</returns>
+        public static async Task<AdminModel> AdminAuthorizationCheck(string login, string password)
         {
             AdminModel admin = new AdminModel();
             SqlConnection connection = GetNewSqlConnection();
@@ -195,13 +202,12 @@ namespace CRM
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Checking authorization error - {ex.Message}");
+                Console.WriteLine($"Checking admin authorization error - {ex.Message}");
             }
             finally
             {
                 connection.Close();
             }
-
             return null;
         }
         
@@ -304,6 +310,115 @@ namespace CRM
             catch (Exception ex)
             {
                 Console.WriteLine($"Selecting all credit applications from db error {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
+            }
+            return null;
+        }
+        
+        //methods for client login
+        
+        /// <summary>
+        /// authorizes client
+        /// </summary>
+        /// <param name="login">client login</param>
+        /// <param name="password">client password</param>
+        /// <returns>instance of client model</returns>
+        public static async Task<ClientModel> ClientAuthorizationCheck(string login, string password)
+        {
+            ClientModel client = new();
+            SqlConnection connection = GetNewSqlConnection();
+            try
+            {
+                string sqlExpressionCheckAuthorization = $"" +
+                                                         $" SELECT * FROM CLIENTS WHERE login = '{login}' and password = '{password}' ";
+                SqlCommand authorizationCheckCommand = new (sqlExpressionCheckAuthorization, connection);
+                connection.Open();
+                SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        client.Id = (int)reader.GetValue(0);
+                        client.Name = (string)reader.GetValue(4);
+                        return client;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Checking admin authorization error - {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
+            }
+            return null;
+        }
+        
+        public static async Task<ClientModel> SelectClientFromDb(int clientId)
+        {
+            ClientModel client = new();
+            SqlConnection connection = GetNewSqlConnection();
+            try
+            {
+                string sqlExpressionCheckAuthorization = $"" +
+                                                         $" SELECT * FROM CLIENTS WHERE id = {clientId} ";
+                SqlCommand authorizationCheckCommand = new (sqlExpressionCheckAuthorization, connection);
+                connection.Open();
+                SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        client.Id = (int)reader.GetValue(0);
+                        client.Name = (string)reader.GetValue(4);
+                        client.Gender = (string)reader.GetValue(8);
+                        client.Citizenship = (string)reader.GetValue(9);
+                        client.MaritalStatus = (string) reader.GetValue(8);
+                        return client;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Selecting client from db error - {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
+            }
+            return null;
+        }
+        
+        public static async Task<FormModel> SelectFormFromDb(int clientId)
+        {
+            FormModel form = new();
+            SqlConnection connection = GetNewSqlConnection();
+            try
+            {
+                string sqlExpressionSelectForm = $"" +
+                                                         $" SELECT * FROM FORMS WHERE client_id = {clientId} ";
+                SqlCommand authorizationCheckCommand = new (sqlExpressionSelectForm, connection);
+                connection.Open();
+                SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        form.Id = (int)reader.GetValue(0);
+                        form.Income = (decimal)reader.GetValue(2);
+                        form.CreditHistory = (int)reader.GetValue(3);
+                        form.Defaults = (int) reader.GetValue(4);
+                        return form;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Selecting form from db error - {ex.Message}");
             }
             finally
             {

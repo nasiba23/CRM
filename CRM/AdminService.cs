@@ -14,21 +14,21 @@ namespace CRM
         /// authorizes user
         /// </summary>
         /// <returns>Task</returns>
-        public static async Task<int> Authorization()
+        public static async Task AdminAuthorization()
         {
             Console.Clear();
             string login = Utils.ConsoleWriteWithResult("Login: ");
             string password = Utils.ConsoleWriteWithResult("Password: ");
             try
             {
-                var admin = await DatabaseService.AuthorizationCheck(login, password);
+                var admin = await DatabaseService.AdminAuthorizationCheck(login, password);
                 if (admin.Id > 0 && !string.IsNullOrEmpty(admin.Name))
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"{admin.Name}, you are successfully logged in");
                     Console.ResetColor();
                     await Task.Delay(1500);
-                    var choice = ShowAdminMenu(admin.Id);
+                    await ShowAdminMenu(admin.Id);
                 }
                 else
                 {
@@ -42,7 +42,6 @@ namespace CRM
             {
                 Console.WriteLine($"Authorization error {ex.Message}");
             }
-            return 0;
         }
         /// <summary>
         /// displays admin menu
@@ -93,7 +92,6 @@ namespace CRM
                         isWorking = false;
                     }
                         break;
-                        ;
                 }
             }
         }
