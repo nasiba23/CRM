@@ -66,31 +66,31 @@ namespace CRM
                 {
                     //register new admin
                     case "1":
-                    {
-                        await CreateAdminAsync();
-                    }
+                        {
+                            await CreateAdminAsync();
+                        }
                         break;
                     //change password
                     case "2":
-                    {
-                        await ChangePasswordAsync(id);
-                    }
+                        {
+                            await ChangePasswordAsync(id);
+                        }
                         break;
                     //view credit applications
                     case "3":
-                    {
-                        await ViewCreditApplications();
-                    }
+                        {
+                            await ViewCreditApplications();
+                        }
                         break;
                     //log out
                     case "4":
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Logging out...");
-                        Console.ResetColor();
-                        await Task.Delay(2000);
-                        isWorking = false;
-                    }
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Logging out...");
+                            Console.ResetColor();
+                            await Task.Delay(2000);
+                            isWorking = false;
+                        }
                         break;
                 }
             }
@@ -195,7 +195,7 @@ namespace CRM
                 int temp = 0;
                 foreach (var item in listApps)
                 {
-                    var creditApp  = listApps[temp];
+                    var creditApp = listApps[temp];
                     temp++;
                     Type type = typeof(CreditApplicationsModel);
                     for (int i = 0; i < type.GetProperties().Length; i++)

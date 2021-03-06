@@ -8,7 +8,7 @@ namespace CRM
     public static class ClientService
     {
         //for registration and credit processing
-        
+
         /// <summary>
         /// creates instance of client and inserts it to db by calling a different method
         /// </summary>
@@ -56,7 +56,7 @@ namespace CRM
             }
             return null;
         }
-        
+
         /// <summary>
         /// creates instance of form and inserts it to db by calling a different method
         /// </summary>
@@ -84,13 +84,13 @@ namespace CRM
                 return null;
             }
         }
-        
+
         /// <summary>
         /// creates instance of credit application and inserts it to db by calling a different method
         /// </summary>
         /// <returns>instance of credit application</returns>
         private static async Task<CreditApplicationsModel> CreateCreditAppAsync(int clientId)
-        { 
+        {
             Utils.RequiredWriter();
             try
             {
@@ -120,7 +120,7 @@ namespace CRM
                 return null;
             }
         }
-        
+
         /// <summary>
         /// calculates client score according to input data
         /// </summary>
@@ -158,8 +158,8 @@ namespace CRM
             };
 
             //checking citizenship
-            score += client.Citizenship.Equals("1") ? 1 : 0; 
-            
+            score += client.Citizenship.Equals("1") ? 1 : 0;
+
             //checking credit sum from income amount
             var creditPerIncome = creditApp.Amount * 100 / form.Income;
             score += creditPerIncome switch
@@ -198,10 +198,9 @@ namespace CRM
 
             //checking credit period
             score++;
-            Console.WriteLine(score);
             return score;
         }
-        
+
         /// <summary>
         /// creates instance of client, inserts it to db and updates isApproved field of credit app by calling other methods
         /// </summary>
@@ -266,11 +265,11 @@ namespace CRM
             }
             catch (Exception ex)
             {
-                
+
                 Console.WriteLine($"Credit processing error - {ex.Message}");
             }
         }
-        
+
         //for client login
         public static async Task ClientAuthorization()
         {
@@ -279,7 +278,7 @@ namespace CRM
             string password = Utils.ConsoleWriteWithResult("Password: ");
             try
             {
-                var client = await DatabaseService.ClientAuthorizationCheck(login, password); 
+                var client = await DatabaseService.ClientAuthorizationCheck(login, password);
                 if (client.Id > 0 && !string.IsNullOrEmpty(client.Name))
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -301,7 +300,7 @@ namespace CRM
                 Console.WriteLine($"Authorization error {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// displays admin menu
         /// </summary>
@@ -323,41 +322,46 @@ namespace CRM
                 {
                     //create new credit application
                     case "1":
-                    {
-                        var app = await CreateCreditAppAsync(id);
-                        var client = await DatabaseService.SelectClientFromDb(id);
-                        var form = await DatabaseService.SelectFormFromDb(id);
-                        int score = CalculateClientScore(client, form, app);
-                        if (score > 11)
                         {
-                            var result = await CreatePaymentsSchedulesModelAsync(score, app);
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Congratulations, your credit application was approved. " +
-                                              $"Below see the payment schedule");
-                            Console.ResetColor();
-                            for (int i = 1; i <= app.Period; i++)
+                            var app = await CreateCreditAppAsync(id);
+                            var client = await DatabaseService.SelectClientFromDb(id);
+                            var form = await DatabaseService.SelectFormFromDb(id);
+                            int score = CalculateClientScore(client, form, app);
+                            if (score > 11)
                             {
-                                Console.WriteLine($"{result.StartDate.Month} - {result.MonthlyPayment}");
-                                result.StartDate = result.StartDate.AddMonths(i);
+                                var result = await CreatePaymentsSchedulesModelAsync(score, app);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine($"Congratulations, your credit application was approved. " +
+                                                  $"Below see the payment schedule");
+                                Console.ResetColor();
+                                for (int i = 1; i <= app.Period; i++)
+                                {
+                                    Console.WriteLine($"{result.StartDate.Month} -\t{result.MonthlyPayment}");
+                                    result.StartDate = result.StartDate.AddMonths(i);
+                                }
                             }
-                        }
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Unfortunately, your credit application was rejected");
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Unfortunately, your credit application was rejected");
+                                Console.ResetColor();
+                            }
+                            // await Task.Delay(10000);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Press any key to return to client menu");
                             Console.ResetColor();
+                            Console.ReadKey();
                         }
-                    }
                         break;
                     //log out
                     case "2":
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Logging out...");
-                        Console.ResetColor();
-                        await Task.Delay(2000);
-                        isWorking = false;
-                    }
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Logging out...");
+                            Console.ResetColor();
+                            await Task.Delay(2000);
+                            isWorking = false;
+                        }
                         break;
                 }
             }

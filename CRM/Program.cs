@@ -16,28 +16,29 @@ namespace CRM
                 {
                     //register and credit processing
                     case "1":
-                    {
-                        await ClientService.CreditProcess();
-                        Console.ForegroundColor = ConsoleColor.DarkGreen;
-                        Console.WriteLine("Press any key to return main menu");
-                        Console.ResetColor();
-                        Console.ReadKey();
-                    }
+                        {
+                            await ClientService.CreditProcess();
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
+                            Console.WriteLine("Press any key to return main menu");
+                            Console.ResetColor();
+                            Console.ReadKey();
+                        }
                         break;
                     //client login
                     case "2":
-                    {
-                        await ClientService.ClientAuthorization();
-                    }
+                        {
+                            await ClientService.ClientAuthorization();
+                        }
                         break;
                     //admin login
                     case "3":
-                    {
-                        await AdminService.AdminAuthorization();
-                    }
+                        {
+                            await AdminService.AdminAuthorization();
+                        }
                         break;
                     //exit application
-                    case "4": _isWorking = false;
+                    case "4":
+                        _isWorking = false;
                         break;
                 }
             }

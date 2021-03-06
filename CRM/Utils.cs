@@ -34,7 +34,7 @@ namespace CRM
             Console.Write(text);
             return Console.ReadLine();
         }
-        
+
         /// <summary>
         ///prints message to indicate required fields
         /// </summary>
@@ -45,7 +45,7 @@ namespace CRM
             Console.WriteLine("Where * is Required");
             Console.ResetColor();
         }
-        
+
         /// <summary>
         /// notifies of instance successful creation
         /// </summary>

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Threading.Tasks;
 using CrmLibrary.Models;
 
 namespace CRM
 {
     //methods for client registration
-    
+
     /// <summary>
     /// database operations
     /// </summary>
@@ -32,9 +33,9 @@ namespace CRM
             {
                 string sqlExpressionAddClient = $"" +
                                                 $" INSERT INTO CLIENTS (login , password, document_number, name, surname, fathers_name, date_of_birth, gender, citizenship, marital_status, taxpayer_id, address ) " +
-                                                $" VALUES ('{client.Login}', '{client.Password}', '{client.DocumentNumber}', '{client.Name}', '{client.Surname}', '{client.FathersName}', '{client.DateOfBirth}', '{client.Gender}', {client.Citizenship}, '{client.MaritalStatus}', '{client.TaxpayerId}', '{client.Address}'); " +
+                                                $" VALUES ('{client.Login}', '{client.Password}', '{client.DocumentNumber}', '{client.Name}', '{client.Surname}', '{client.FathersName}', '{client.DateOfBirth}', '{client.Gender}', '{client.Citizenship}', '{client.MaritalStatus}', '{client.TaxpayerId}', '{client.Address}'); " +
                                                 $" SELECT CAST(scope_identity() AS int) ";
-                SqlCommand clientAddCommand = new (sqlExpressionAddClient, connection);
+                SqlCommand clientAddCommand = new(sqlExpressionAddClient, connection);
                 connection.Open();
                 var id = await clientAddCommand.ExecuteScalarAsync();
                 clientId = (int)id;
@@ -49,7 +50,7 @@ namespace CRM
             }
             return clientId;
         }
-        
+
         /// <summary>
         /// inserts client into db
         /// </summary>
@@ -65,7 +66,7 @@ namespace CRM
                                                 $" INSERT INTO FORMS (client_id, income, credit_history, defaults) " +
                                                 $" VALUES ({form.ClientId}, {form.Income}, {form.CreditHistory}, {form.Defaults}); " +
                                                 $" SELECT CAST(scope_identity() AS int) ";
-                SqlCommand formAddCommand = new (sqlExpressionAddForm, connection);
+                SqlCommand formAddCommand = new(sqlExpressionAddForm, connection);
                 connection.Open();
                 var id = await formAddCommand.ExecuteScalarAsync();
                 formId = (int)id;
@@ -81,7 +82,7 @@ namespace CRM
 
             return formId;
         }
-        
+
         /// <summary>
         /// inserts credit application into db
         /// </summary>
@@ -97,7 +98,7 @@ namespace CRM
                                               $" INSERT INTO CREDIT_APPLICATIONS (client_id, purpose, amount, period, is_approved) " +
                                               $" VALUES ({application.ClientId}, '{application.Purpose}', {application.Amount}, {application.Period}, 0); " +
                                               $" SELECT CAST(scope_identity() AS int) ";
-                SqlCommand applicationAddCommand = new (sqlExpressionAddForm, connection);
+                SqlCommand applicationAddCommand = new(sqlExpressionAddForm, connection);
                 connection.Open();
                 var id = await applicationAddCommand.ExecuteScalarAsync();
                 applicationId = (int)id;
@@ -112,7 +113,7 @@ namespace CRM
             }
             return applicationId;
         }
-        
+
         /// <summary>
         /// updates isApproved field in credit applications table
         /// </summary>
@@ -124,7 +125,7 @@ namespace CRM
             try
             {
                 string sqlExpressionUpdateApp = $"UPDATE CREDIT_APPLICATIONS SET is_approved = 1 WHERE id = {creditApp.Id} AND client_id = {creditApp.ClientId}; ";
-                SqlCommand applicationUpdateCommand = new (sqlExpressionUpdateApp, connection);
+                SqlCommand applicationUpdateCommand = new(sqlExpressionUpdateApp, connection);
                 connection.Open();
                 await applicationUpdateCommand.ExecuteNonQueryAsync();
             }
@@ -138,7 +139,7 @@ namespace CRM
                 connection.Close();
             }
         }
-        
+
         /// <summary>
         /// inserts payments schedules into db
         /// </summary>
@@ -154,7 +155,7 @@ namespace CRM
                                               $" INSERT INTO PAYMENTS_SCHEDULES (client_id, application_id, monthly_payment, start_date, end_date) " +
                                               $" VALUES ({paymentsSchedule.ClientID}, {paymentsSchedule.ApplicationId}, {paymentsSchedule.MonthlyPayment}, '{paymentsSchedule.StartDate}', '{paymentsSchedule.EndDate}'); " +
                                               $" SELECT CAST(scope_identity() AS int) ";
-                SqlCommand paymentsSchedulesAddCommand = new (sqlExpressionAddPaymentsSchedules, connection);
+                SqlCommand paymentsSchedulesAddCommand = new(sqlExpressionAddPaymentsSchedules, connection);
                 connection.Open();
                 var id = await paymentsSchedulesAddCommand.ExecuteScalarAsync();
                 scheduleId = (int)id;
@@ -172,7 +173,7 @@ namespace CRM
         }
 
         //methods for admin login
-        
+
         /// <summary>
         /// authorizes admin
         /// </summary>
@@ -187,7 +188,7 @@ namespace CRM
             {
                 string sqlExpressionCheckAuthorization = $"" +
                                                          $" SELECT * FROM ADMINS WHERE login = '{login}' and password = '{password}' ";
-                SqlCommand authorizationCheckCommand = new (sqlExpressionCheckAuthorization, connection);
+                SqlCommand authorizationCheckCommand = new(sqlExpressionCheckAuthorization, connection);
                 connection.Open();
                 SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
                 if (reader.HasRows)
@@ -210,7 +211,7 @@ namespace CRM
             }
             return null;
         }
-        
+
         /// <summary>
         /// inserts admin into db
         /// </summary>
@@ -224,7 +225,7 @@ namespace CRM
                 string sqlExpressionAddAdmin = $"" +
                                                 $" INSERT INTO ADMINS (login , password, document_number, name, surname, fathers_name, date_of_birth, gender, citizenship, marital_status, taxpayer_id, address ) " +
                                                 $" VALUES ('{admin.Login}', '{admin.Password}', '{admin.DocumentNumber}', '{admin.Name}', '{admin.Surname}', '{admin.FathersName}', '{admin.DateOfBirth}', '{admin.Gender}', {admin.Citizenship}, '{admin.MaritalStatus}', '{admin.TaxpayerId}', '{admin.Address}'); ";
-                SqlCommand adminAddCommand = new (sqlExpressionAddAdmin, connection);
+                SqlCommand adminAddCommand = new(sqlExpressionAddAdmin, connection);
                 connection.Open();
                 await adminAddCommand.ExecuteNonQueryAsync();
             }
@@ -254,7 +255,7 @@ namespace CRM
                                                      $" UPDATE ADMINS   " +
                                                      $" SET password = '{newPassword}' " +
                                                      $" WHERE id = {id} and password = '{currentPassword}' ";
-                SqlCommand passwordUpdateCommand = new (sqlExpressionPasswordUpdate, connection);
+                SqlCommand passwordUpdateCommand = new(sqlExpressionPasswordUpdate, connection);
                 connection.Open();
                 var result = await passwordUpdateCommand.ExecuteNonQueryAsync();
                 return result;
@@ -282,7 +283,7 @@ namespace CRM
             {
                 connection.Open();
                 string sqlExpressionSelectApps = $"SELECT * FROM credit_applications ";
-                SqlCommand selectAppsCommand = new (sqlExpressionSelectApps, connection);
+                SqlCommand selectAppsCommand = new(sqlExpressionSelectApps, connection);
                 SqlDataReader reader = await selectAppsCommand.ExecuteReaderAsync();
                 if (reader.HasRows)
                 {
@@ -301,7 +302,7 @@ namespace CRM
                         };
                         creditApp.Amount = (decimal)reader.GetValue(3);
                         creditApp.Period = (int)reader.GetValue(4);
-                        creditApp.IsApproved = (bool) reader.GetValue(5);
+                        creditApp.IsApproved = (bool)reader.GetValue(5);
                         listApps.Add(creditApp);
                     }
                     return listApps;
@@ -317,9 +318,9 @@ namespace CRM
             }
             return null;
         }
-        
+
         //methods for client login
-        
+
         /// <summary>
         /// authorizes client
         /// </summary>
@@ -334,7 +335,7 @@ namespace CRM
             {
                 string sqlExpressionCheckAuthorization = $"" +
                                                          $" SELECT * FROM CLIENTS WHERE login = '{login}' and password = '{password}' ";
-                SqlCommand authorizationCheckCommand = new (sqlExpressionCheckAuthorization, connection);
+                SqlCommand authorizationCheckCommand = new(sqlExpressionCheckAuthorization, connection);
                 connection.Open();
                 SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
                 if (reader.HasRows)
@@ -357,7 +358,7 @@ namespace CRM
             }
             return null;
         }
-        
+
         public static async Task<ClientModel> SelectClientFromDb(int clientId)
         {
             ClientModel client = new();
@@ -366,7 +367,7 @@ namespace CRM
             {
                 string sqlExpressionCheckAuthorization = $"" +
                                                          $" SELECT * FROM CLIENTS WHERE id = {clientId} ";
-                SqlCommand authorizationCheckCommand = new (sqlExpressionCheckAuthorization, connection);
+                SqlCommand authorizationCheckCommand = new(sqlExpressionCheckAuthorization, connection);
                 connection.Open();
                 SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
                 if (reader.HasRows)
@@ -375,9 +376,10 @@ namespace CRM
                     {
                         client.Id = (int)reader.GetValue(0);
                         client.Name = (string)reader.GetValue(4);
+                        client.DateOfBirth = DateTime.Parse(reader.GetValue(7).ToString());
                         client.Gender = (string)reader.GetValue(8);
                         client.Citizenship = (string)reader.GetValue(9);
-                        client.MaritalStatus = (string) reader.GetValue(8);
+                        client.MaritalStatus = (string)reader.GetValue(10);
                         return client;
                     }
                 }
@@ -392,16 +394,15 @@ namespace CRM
             }
             return null;
         }
-        
+
         public static async Task<FormModel> SelectFormFromDb(int clientId)
         {
             FormModel form = new();
             SqlConnection connection = GetNewSqlConnection();
             try
             {
-                string sqlExpressionSelectForm = $"" +
-                                                         $" SELECT * FROM FORMS WHERE client_id = {clientId} ";
-                SqlCommand authorizationCheckCommand = new (sqlExpressionSelectForm, connection);
+                string sqlExpressionSelectForm = $" SELECT * FROM FORMS WHERE client_id = {clientId} ";
+                SqlCommand authorizationCheckCommand = new(sqlExpressionSelectForm, connection);
                 connection.Open();
                 SqlDataReader reader = await authorizationCheckCommand.ExecuteReaderAsync();
                 if (reader.HasRows)
@@ -411,7 +412,7 @@ namespace CRM
                         form.Id = (int)reader.GetValue(0);
                         form.Income = (decimal)reader.GetValue(2);
                         form.CreditHistory = (int)reader.GetValue(3);
-                        form.Defaults = (int) reader.GetValue(4);
+                        form.Defaults = (int)reader.GetValue(4);
                         return form;
                     }
                 }
