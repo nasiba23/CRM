@@ -249,10 +249,20 @@ namespace CRM
                     Console.WriteLine($"Congratulations, your credit application was approved. " +
                                       $"Below see the payment schedule");
                     Console.ResetColor();
+                    
+                    //calculates commission
+                    var commission = creditApp.Amount;
+                    commission *= creditApp.Period switch
+                    {
+                        <= 6 => 10m / 100m,
+                        <= 12 => 15m / 100m,
+                        > 12 => 20m / 100m,
+                    };
+                    Console.WriteLine($"Commission - \t{Math.Round(commission,2)}");
                     for (int i = 1; i <= creditApp.Period; i++)
                     {
-                        Console.WriteLine($"{result.StartDate.Month} - {result.MonthlyPayment}");
-                        result.StartDate = result.StartDate.AddMonths(i);
+                        Console.WriteLine($"{result.StartDate.ToString("MMMM")} -\t{Math.Round(result.MonthlyPayment,2)}");
+                        result.StartDate = result.StartDate.AddMonths(1);
                     }
                 }
                 else
@@ -334,10 +344,19 @@ namespace CRM
                                 Console.WriteLine($"Congratulations, your credit application was approved. " +
                                                   $"Below see the payment schedule");
                                 Console.ResetColor();
+                                //calculates commission
+                                var commission = app.Amount;
+                                commission *= app.Period switch
+                                {
+                                    <= 6 => 10m / 100m,
+                                    <= 12 => 15m / 100m,
+                                    > 12 => 20m / 100m,
+                                };
+                                Console.WriteLine($"Commission - \t{Math.Round(commission,2)}");
                                 for (int i = 1; i <= app.Period; i++)
                                 {
-                                    Console.WriteLine($"{result.StartDate.Month} -\t{result.MonthlyPayment}");
-                                    result.StartDate = result.StartDate.AddMonths(i);
+                                    Console.WriteLine($"{result.StartDate.ToString("MMMM")} -\t{Math.Round(result.MonthlyPayment,2)}");
+                                    result.StartDate = result.StartDate.AddMonths(1);
                                 }
                             }
                             else
